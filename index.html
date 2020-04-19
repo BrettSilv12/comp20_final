@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="apistyle.css">
+    <title>Sign in Page</title>
+</head>
+
+<body onload="getImage(true, false)">
+    <script language="javascript">
+    function submit()
+    {
+        alert("AYE");
+        var username = document.getElementById("usern").value;
+        var image = document.getElementById("note1").innerHTML;
+        var jason = {
+          "username"  :  username,
+          "image"   :  image,
+        }
+        alert(jason.image);
+        //make this function submit the 2 fields to the db
+        return true;
+    }  
+        
+    numImage = 0;
+    previousWord = "image";
+    function getImage(default_image, retry) {
+      if(default_image) word = "image";
+      else if(retry) word = "retry";
+      else word = document.form1.image.value;
+
+      if(previousWord == word) numImage = numImage + 1;
+      else numImage = 0;
+
+      previousWord = word;
+
+      request = new XMLHttpRequest();
+      request.open("GET", "https://pixabay.com/api/?key=15909759-b4111d3c13a2b72bb3717136f&q=" + word, true);
+
+      request.onreadystatechange = function() {
+        if (request.readyState == 4 && request.status == 200) {
+          result = request.responseText;
+          // alert(result);
+          imageData = JSON.parse(result);
+          if(imageData["totalHits"] == 0) { 
+            alert("There are no resaults for this search");
+            getImage(false, true);
+            return 0;
+          }
+          if(numImage == imageData["totalHits"]) {
+            alert("You have gone through all images with this word. Starting image results over.");
+            numImage = 0;
+          }
+          document.getElementById("picture").innerHTML ="<img class='picture' src='" + imageData["hits"][numImage]["webformatURL"] + "'>";
+          var image_name = imageData["hits"][numImage]["webformatURL"];
+          document.getElementById("note1").innerHTML = image_name;
+        }
+        else if (request.readyState == 4 && request.status != 200) {
+          document.getElementById("picture").innerHTML = "Something is wrong!  Check the logs to see where this went off the rails";
+        }
+        else if (request.readyState == 3) {
+          document.getElementById("picture").innerHTML = "Too soon!  Try again";
+        }
+      }
+      request.send();
+    }    
+    
+    </script>
+  <div class="main">
+    <p class="sign" align="center">Sign in</p>
+    <form class="form1" name="form1">
+      <input class="field" type="text" id="usern" placeholder="Username" required>
+      <input class="field" type="text" id="image" placeholder="Your Image" onchange="return getImage(false, false)" required>
+      <a class="submit" onclick="return submit()" href="game.html">Sign in</a>
+      <p class="linker" align="center"><a href="https://spencergallant.github.io/comp20_api/">Reference for the Image API</p>
+    </form>
+            
+                
+  </div>
+    <p class = "text" id = "note">Your Profile Picture based off of Your Image Keyword : </p> <br/>
+    <div class="picture" id = "picture"></div> <br/>
+    <<p class = "note1" id = "note1"> </p> <br/>
+     
+</body>
+
+</html>
