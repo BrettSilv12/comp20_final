@@ -10,14 +10,12 @@
     <script language="javascript">
     function submit()
     {
-        alert("AYE");
         var username = document.getElementById("usern").value;
         var image = document.getElementById("note1").innerHTML;
         var jason = {
           "username"  :  username,
           "image"   :  image,
         }
-        alert(jason.image);
         //make this function submit the 2 fields to the db
         return true;
     }  
